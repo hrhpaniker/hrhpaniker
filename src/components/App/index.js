@@ -6,23 +6,14 @@ const App = () => {
   const [value, setValue] = useState("0");
   const [memory, setMemory] = useState(null);
   const [operator, setOperator] = useState(null);
-
-  const storage = () => {
-    let store = [];
-    store.push(value);
-    const dataDisplay = localStorage.setItem("dataDisplay",  JSON.stringify(store));
-    const display = document.getElementById("val");
-  };
-
-storage();
-
-
+  const [history, setHistory] = useState(null);
 
   const handleButtonPress = content => () => {
     const num = parseFloat(value);
 
     if (content === "C") {
       setValue("0");
+      setHistory("0");
       setMemory(null);
       setOperator(null);
       return;
@@ -154,13 +145,13 @@ storage();
       if (operator === "+") {
         setValue((memory + num).toString());
       }
+      setHistory(`${memory} ${operator} ${value}`);
       setMemory(null);
       return;
     }
 
     if (content === ".") {
       if (value.includes(".")) return;
-
       setValue (value + ".");
       return;
     }
@@ -170,13 +161,29 @@ storage();
     } else {
       setValue((parseFloat(num + content)).toString());
     }
-
   };
+
+  const storage_1 = () => {
+    localStorage.getItem("dataDisplay");
+    const store_1 = [];
+    const data = JSON.parse(localStorage.getItem("dataDisplay"));
+    store_1.push(value);
+    localStorage.setItem("dataDisplay",  JSON.stringify(store_1));
+  };
+  storage_1();
+
+  const storage_2 = () => {
+    localStorage.getItem("dataHistory");
+    const store_2 = [];
+    const data = JSON.parse(localStorage.getItem("dataHistory"));
+    store_2.push(history);
+    localStorage.setItem("dataHistory",  JSON.stringify(store_2));
+  };
+  storage_2();
 
   return (
     <div className = "App">
-      <div className = {!memory ? "0" : `${memory} ${operator} ${value}`}>
-        {!value.length && !memory ? "0" : value || memory && operator}</div>
+      <div className = "history" id = "his">{history}</div>
      <div className = "display" id = "val">{value}</div>
      <div className = "buttons">
        <Button onButtonClick = {handleButtonPress} content = "C" type = "colorful" />
